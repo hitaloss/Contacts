@@ -5,7 +5,14 @@ import { IContactRequest } from "../../interfaces/contact";
 async function contactCreateController(request: Request, response: Response) {
   const { fullName, email, phone }: IContactRequest = request.body;
 
-  const newContact = await contactCreateService({ fullName, email, phone });
+  const clientId: string = request.client.clientId;
+
+  const newContact = await contactCreateService({
+    fullName,
+    email,
+    phone,
+    clientId,
+  });
 
   return response
     .status(201)

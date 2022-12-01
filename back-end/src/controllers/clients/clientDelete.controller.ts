@@ -2,7 +2,7 @@ import clientDeleteService from "../../services/clients/clientDelete.services";
 import { Request, Response } from "express";
 
 async function clientDeleteController(request: Request, response: Response) {
-  const id = request.client.clientId;
+  const id: string = request.client.clientId;
 
   const clientDeleted = await clientDeleteService(id);
 

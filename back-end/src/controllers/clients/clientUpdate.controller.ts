@@ -6,7 +6,7 @@ import { IClientUpdate } from "../../interfaces/client";
 async function clientUpdateController(request: Request, response: Response) {
   const { fullName, phone, password }: IClientUpdate = request.body;
 
-  const id = request.client.clientId;
+  const id: string = request.client.clientId;
 
   const clientUpdated = await clientUpdateService(id, {
     fullName,
