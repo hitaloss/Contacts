@@ -4,3 +4,9 @@ export interface IClientRequest {
   phone: string;
   password: string;
 }
+
+export interface IClientUpdate {
+  fullName?: string;
+  phone?: string;
+  password?: string;
+}

@@ -12,7 +12,13 @@ async function clientCreateController(request: Request, response: Response) {
     phone,
   });
 
-  return response.status(201).json(instanceToPlain(newClient));
+  return response
+    .status(201)
+    .json({
+      statusCode: 200,
+      message: "Success",
+      client: instanceToPlain(newClient),
+    });
 }
 
 export default clientCreateController;
