@@ -4,9 +4,12 @@ import "express-async-errors";
 import { appRoutes } from "./routes";
 import express from "express";
 
+const cors = require("cors");
+
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 appRoutes(app);
 
