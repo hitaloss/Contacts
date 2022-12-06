@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Login from "../pages/Login";
 import Main from "../pages/Main";
 import Register from "../pages/Register";
+import Dashboard from "../pages/Dashboard";
 
 function Routes() {
   const [isLogged, setIsLogged] = useState(false);
@@ -22,9 +23,9 @@ function Routes() {
       <Route path="/login">
         <Login setIsLogged={setIsLogged} isLogged={isLogged} />
       </Route>
-      {/* <Route path="/dashboard">
+      <Route path="/dashboard">
         <Dashboard isLogged={isLogged} setIsLogged={setIsLogged} />
-      </Route> */}
+      </Route>
     </Switch>
   );
 }

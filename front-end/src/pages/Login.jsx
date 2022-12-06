@@ -9,47 +9,33 @@ import {
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { yupResolver } from "@hookform/resolvers/yup";
+import SubmitButton from "../components/SubmitButton";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import phone from "../assets/phone.jpg";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import * as yup from "yup";
+import { loginSchema } from "../schema";
+
 import axios from "axios";
+import MainStack from "../components/MainStack";
 
 function Login({ setIsLogged }) {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
 
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .required("Campo obrigatório")
-      .max(40, "Email inválido")
-      .matches(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        "Email inválido"
-      ),
-    password: yup
-      .string()
-      .required("Campo obrigatório")
-      .min(6, "Mínimo de 6 caracteres"),
-  });
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({ resolver: yupResolver(loginSchema) });
 
   const onSubmitData = (data) => {
-    console.log(data);
     const response = axios
       .post(`${BASEURL}session`, data)
       .then((res) => {
-        console.log(res);
-        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("contacts@token", res.data.token);
         toast.success("Login bem sucedido!");
         setIsLogged(true);
         setTimeout(() => history.push("/dashboard"), 500);
@@ -65,23 +51,7 @@ function Login({ setIsLogged }) {
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   return (
-    <Stack
-      px={8}
-      justifyContent="center"
-      alignItems="center"
-      spacing={4}
-      sx={{
-        backgroundImage: `url(${phone})`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        position: "absolute",
-        top: "0px",
-        left: "0px",
-        width: "100%",
-        height: "100%",
-      }}
-    >
+    <MainStack image={phone} align="center">
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -140,19 +110,7 @@ function Login({ setIsLogged }) {
         />
 
         <Stack direction="column" alignItems="center" spacing={2} width="20%">
-          <Button
-            type="submit"
-            sx={{
-              padding: ".6rem",
-              width: "12rem",
-              borderColor: "white",
-              borderRadius: "30px",
-              color: "white",
-            }}
-            variant="outlined"
-          >
-            Entrar
-          </Button>
+          <SubmitButton text="Enviar" />
           <Button
             size="small"
             sx={{
@@ -170,7 +128,7 @@ function Login({ setIsLogged }) {
           </Button>
         </Stack>
       </Stack>
-    </Stack>
+    </MainStack>
   );
 }
 

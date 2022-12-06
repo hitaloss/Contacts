@@ -5,51 +5,118 @@ import {
   IconButton,
   Typography,
   Button,
+  AppBar,
+  Toolbar,
+  Skeleton,
 } from "@mui/material";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useHistory } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import phone from "../assets/phone.jpg";
+import blackground from "../assets/blackground.jpg";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { toast } from "react-toastify";
-import { useState } from "react";
-import { registerSchema } from "../schema";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import AddIcon from "@mui/icons-material/Add";
+import CommonButton from "../components/CommonButton";
 import MainStack from "../components/MainStack";
 
-function Register() {
+function Dashboard() {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(registerSchema) });
+  const token = localStorage.getItem("contacts@token");
+  const name = localStorage.getItem("fullName");
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
-  const onSubmitData = (data) => {
+  const getClientData = () => {
     const response = axios
-      .post(`${BASEURL}clients`, data)
-      .then(() => {
-        toast.success("Cadastro bem sucedido! Redirecionando para o login...");
-        setTimeout(() => history.push("/login"), 3000);
+      .get(`${BASEURL}clients/myaccount`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        localStorage.setItem("id", res.data.client.id);
+        localStorage.setItem("fullName", res.data.client.fullName);
+        setLoading(false);
       })
       .catch((err) => {
-        err.response.data.message === "Email already exists"
-          ? toast.error("Email já existente")
-          : toast.error("Dados inválidos, verifique os campos");
+        console.log(err);
       });
     return response;
   };
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = () => setShowPassword(!showPassword);
+  useEffect(() => {
+    getClientData();
+  }, []);
 
   return (
-    <MainStack image={phone}>
+    <>
       <Stack
+        sx={{
+          backgroundImage: `url(${blackground})`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          position: "absolute",
+          top: "0px",
+          left: "0px",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <AppBar
+          position="static"
+          sx={{
+            bgcolor: "#282c34",
+          }}
+        >
+          <Toolbar>
+            <Stack sx={{ flexGrow: 1 }}>
+              <CommonButton
+                function={() => {
+                  localStorage.clear(),
+                    setTimeout(() => history.push("/login"), 500);
+                }}
+              >
+                {" "}
+                Sair{" "}
+              </CommonButton>
+            </Stack>
+            <IconButton size="large" edge="end" color="inherit">
+              <SettingsIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Stack
+          direction="column"
+          p={12}
+          height="100%"
+          justifyContent="space-between"
+        >
+          <Stack direction="row">
+            <Typography variant="h2">
+              Olá,{" "}
+              {loading ? (
+                <Skeleton width="9rem" />
+              ) : (
+                name.split(" ").slice(0, 1)
+              )}
+            </Typography>
+          </Stack>
+          <Stack direction="column">
+            <Stack direction="row" spacing={2} alignItems="end">
+              <Typography variant="h3">Meus Contatos</Typography>
+              <IconButton size="large">
+                <AddIcon />
+              </IconButton>
+            </Stack>
+            <Stack></Stack>
+          </Stack>
+        </Stack>
+        {/* <Stack
         justifyContent="center"
         alignItems="center"
         spacing={4}
@@ -165,9 +232,10 @@ function Register() {
             Já tenho uma conta
           </Button>
         </Stack>
+      </Stack> */}
       </Stack>
-    </MainStack>
+    </>
   );
 }
 
-export default Register;
+export default Dashboard;

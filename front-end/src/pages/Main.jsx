@@ -1,27 +1,13 @@
 import { Stack, Typography, Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import old_phone from "../assets/old_phone.jpg";
+import MainStack from "../components/MainStack";
 
 function Main() {
   const history = useHistory();
 
   return (
-    <Stack
-      px={8}
-      justifyContent="center"
-      spacing={4}
-      sx={{
-        backgroundImage: `url(${old_phone})`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        position: "absolute",
-        top: "0px",
-        left: "0px",
-        width: "100%",
-        height: "100%",
-      }}
-    >
+    <MainStack image={old_phone} align={""}>
       <Typography
         variant="h4"
         sx={{
@@ -71,7 +57,7 @@ function Main() {
           Já tenho uma conta
         </Button>
       </Stack>
-    </Stack>
+    </MainStack>
   );
 }
 
