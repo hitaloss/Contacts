@@ -17,7 +17,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import AddIcon from "@mui/icons-material/Add";
 import CommonButton from "../components/CommonButton";
-import MainStack from "../components/MainStack";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 
 function Dashboard() {
   const BASEURL = "http://localhost:3001/";
@@ -113,7 +115,33 @@ function Dashboard() {
                 <AddIcon />
               </IconButton>
             </Stack>
-            <Stack></Stack>
+            <Stack>
+              <Card sx={{ minWidth: 275 }}>
+                <CardContent>
+                  <Typography
+                    sx={{ fontSize: 14 }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Word of the Day
+                  </Typography>
+                  <Typography variant="h5" component="div">
+                    benevolent
+                  </Typography>
+                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    adjective
+                  </Typography>
+                  <Typography variant="body2">
+                    well meaning and kindly.
+                    <br />
+                    {'"a benevolent smile"'}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small">Learn More</Button>
+                </CardActions>
+              </Card>
+            </Stack>
           </Stack>
         </Stack>
         {/* <Stack
