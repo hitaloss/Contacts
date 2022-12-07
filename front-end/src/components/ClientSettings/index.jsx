@@ -144,7 +144,6 @@ function ClientSettings(props) {
         </Button>
         <Button
           type="submit"
-          onClick={() => props.setOpen(false)}
           sx={{
             padding: ".6rem",
             width: "12rem",

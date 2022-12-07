@@ -10,7 +10,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SubmitButton from "../components/SubmitButton";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import phone from "../assets/phone.jpg";
 import { toast } from "react-toastify";
@@ -20,7 +20,7 @@ import { loginSchema } from "../schema";
 import axios from "axios";
 import MainStack from "../components/MainStack";
 
-function Login({ setIsLogged }) {
+function Login({ setIsLogged, isLogged }) {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
@@ -50,6 +50,7 @@ function Login({ setIsLogged }) {
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
+  if (isLogged) return <Redirect to="/dashboard" />;
   return (
     <MainStack image={phone} align="center">
       <Stack

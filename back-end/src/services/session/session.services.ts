@@ -27,7 +27,7 @@ async function sessionService({
     { email: client.email },
     process.env.SECRET_KEY as string,
     {
-      expiresIn: "3h",
+      expiresIn: "3d",
       subject: client.id,
     }
   );

@@ -25,7 +25,7 @@ import { useState, useEffect } from "react";
 import ContactModal from "../components/ContactModal";
 import ClientSettings from "../components/ClientSettings";
 
-function Dashboard() {
+function Dashboard({ isLogged, setIsLogged }) {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
   const [open, setOpen] = useState(false);
@@ -137,6 +137,7 @@ function Dashboard() {
       })
       .then(() => {
         getClientData();
+        window.location.reload();
       })
       .catch((err) => {
         console.log(err);
@@ -152,8 +153,10 @@ function Dashboard() {
         },
       })
       .then(() => {
+        localStorage.clear();
         toast.info("Conta deletada");
-        <Redirect to="/" />;
+        setIsLogged(false);
+        history.push("/");
       })
       .catch((err) => {
         console.log(err);
@@ -166,6 +169,7 @@ function Dashboard() {
     getContacts();
   }, []);
 
+  if (isLogged === false) return <Redirect to="/" />;
   return (
     <>
       <Stack
@@ -191,8 +195,9 @@ function Dashboard() {
             <Stack sx={{ flexGrow: 1 }}>
               <CommonButton
                 function={() => {
-                  localStorage.clear(),
-                    setTimeout(() => history.push("/login"), 500);
+                  localStorage.clear();
+                  setIsLogged(false);
+                  setTimeout(() => history.push("/"), 500);
                 }}
               >
                 {" "}

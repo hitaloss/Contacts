@@ -9,7 +9,7 @@ import {
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import phone from "../assets/phone.jpg";
 import { toast } from "react-toastify";
@@ -18,7 +18,7 @@ import { registerSchema } from "../schema";
 import axios from "axios";
 import MainStack from "../components/MainStack";
 
-function Register() {
+function Register({ isLogged }) {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +38,7 @@ function Register() {
       })
       .catch((err) => {
         console.log(err);
-        err.response.data.message === "Email already exists"
+        err.response.data.message === "This email already exists"
           ? toast.error("Email já existente")
           : toast.error("Dados inválidos, verifique os campos");
       });
@@ -47,6 +47,11 @@ function Register() {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+  if (isLogged)
+    return setTimeout(() => {
+      <Redirect to="/dashboard" />;
+    }, 300);
 
   return (
     <MainStack image={phone}>

@@ -2,6 +2,7 @@ import { AppDataSource } from "../../data-source";
 import { Client } from "../../entities/clients.entity";
 import { AppError } from "../../errors/appError";
 import { IClientUpdate } from "../../interfaces/client";
+import { hash } from "bcrypt";
 
 async function clientUpdateService(
   id: string,
@@ -12,6 +13,8 @@ async function clientUpdateService(
   const client = await clientRepository.findOneBy({ id });
 
   if (!client) throw new AppError(404, "Client not found.");
+
+  if (password) await hash(password, 10);
 
   const clientUpdated = await clientRepository.update(id, {
     fullName: fullName ? fullName : client.fullName,
