@@ -9,23 +9,32 @@ import {
   Toolbar,
   Skeleton,
 } from "@mui/material";
-import { useHistory } from "react-router-dom";
-import blackground from "../assets/blackground.jpg";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
-import axios from "axios";
 import AddIcon from "@mui/icons-material/Add";
 import CommonButton from "../components/CommonButton";
 import Card from "@mui/material/Card";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import { Redirect, useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import blackground from "../assets/blackground.jpg";
+import { contactSchema, contactEditSchema, registerSchema } from "../schema";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import ContactModal from "../components/ContactModal";
+import ClientSettings from "../components/ClientSettings";
 
 function Dashboard() {
   const BASEURL = "http://localhost:3001/";
   const history = useHistory();
+  const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [contacts, setContacts] = useState([]);
+  const [confirm, setConfirm] = useState(false);
 
   const token = localStorage.getItem("contacts@token");
   const name = localStorage.getItem("fullName");
@@ -50,8 +59,111 @@ function Dashboard() {
     return response;
   };
 
+  const getContacts = () => {
+    const response = axios
+      .get(`${BASEURL}contacts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setContacts(res.data.contacts);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
+  const createContact = (data) => {
+    const response = axios
+      .post(`${BASEURL}contacts`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        getContacts();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
+  const updateContact = (data) => {
+    const response = axios
+      .patch(
+        `${BASEURL}contacts/${localStorage.getItem("contacts@contactId")}/`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        getContacts();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
+  const deleteContact = (contactId) => {
+    const response = axios
+      .delete(`${BASEURL}contacts/${contactId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        getContacts();
+        toast.info("Contato removido");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
+  const updateClient = (data) => {
+    const response = axios
+      .patch(`${BASEURL}clients`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        getClientData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
+  const deleteClient = () => {
+    const response = axios
+      .delete(`${BASEURL}clients`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        toast.info("Conta deletada");
+        <Redirect to="/" />;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return response;
+  };
+
   useEffect(() => {
     getClientData();
+    getContacts();
   }, []);
 
   return (
@@ -72,7 +184,7 @@ function Dashboard() {
         <AppBar
           position="static"
           sx={{
-            bgcolor: "#282c34",
+            bgcolor: "transparent",
           }}
         >
           <Toolbar>
@@ -87,9 +199,27 @@ function Dashboard() {
                 Sair{" "}
               </CommonButton>
             </Stack>
-            <IconButton size="large" edge="end" color="inherit">
+            <IconButton
+              onClick={() => setOpenSettings(true)}
+              size="large"
+              edge="end"
+              color="inherit"
+            >
               <SettingsIcon />
             </IconButton>
+            <ClientSettings
+              schema={registerSchema}
+              function={updateClient}
+              open={openSettings}
+              setOpen={setOpenSettings}
+              title="Minha Conta"
+              confirm={confirm}
+              setConfirm={setConfirm}
+              deleteClient={deleteClient}
+              handleClickShowPassword={handleClickShowPassword}
+              handleMouseDownPassword={handleMouseDownPassword}
+              showPassword={showPassword}
+            />
           </Toolbar>
         </AppBar>
         <Stack
@@ -98,8 +228,12 @@ function Dashboard() {
           height="100%"
           justifyContent="space-between"
         >
-          <Stack direction="row">
-            <Typography variant="h2">
+          <Stack>
+            <Typography
+              sx={{ display: "flex", direction: "row", gap: "2rem" }}
+              color="white"
+              variant="h2"
+            >
               Olá,{" "}
               {loading ? (
                 <Skeleton width="9rem" />
@@ -108,159 +242,82 @@ function Dashboard() {
               )}
             </Typography>
           </Stack>
-          <Stack direction="column">
+          <Stack direction="column" spacing={5}>
             <Stack direction="row" spacing={2} alignItems="end">
-              <Typography variant="h3">Meus Contatos</Typography>
-              <IconButton size="large">
+              <Typography color="white" variant="h3">
+                Meus Contatos
+              </Typography>
+              <IconButton onClick={() => setOpen(true)} size="large">
                 <AddIcon />
               </IconButton>
+              <ContactModal
+                schema={contactSchema}
+                contactFunction={createContact}
+                setOpen={setOpen}
+                title="Criar contato"
+                open={open}
+              />
             </Stack>
-            <Stack>
-              <Card sx={{ minWidth: 275 }}>
-                <CardContent>
-                  <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
-                    gutterBottom
+            <Stack direction="row" spacing={4} overflow="auto" pb="0.5rem">
+              {contacts.length > 0 ? (
+                contacts.map((item) => (
+                  <Card
+                    key={item.id}
+                    sx={{ minWidth: 275, width: "22%", maxWidth: "20rem" }}
                   >
-                    Word of the Day
-                  </Typography>
-                  <Typography variant="h5" component="div">
-                    benevolent
-                  </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
-                  </Typography>
-                  <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">Learn More</Button>
-                </CardActions>
-              </Card>
+                    <CardContent>
+                      <Typography variant="h4" component="div">
+                        {item.fullName.length > 14
+                          ? item.fullName.substring(0, 14) + "..."
+                          : item.fullName}
+                      </Typography>
+                      <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                        {item.phone.replace(
+                          /(\d{2})(\d{5})(\d{4})/,
+                          "($1) $2-$3"
+                        )}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          textDecoration: "underline",
+                          overflowWrap: "break-word",
+                        }}
+                      >
+                        {item.email}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <IconButton
+                        onClick={() => {
+                          localStorage.setItem("contacts@contactId", item.id),
+                            setOpenEdit(true);
+                        }}
+                      >
+                        <SettingsIcon />
+                      </IconButton>
+                      <ContactModal
+                        schema={contactEditSchema}
+                        contactFunction={updateContact}
+                        setOpen={setOpenEdit}
+                        title="Editar contato"
+                        open={openEdit}
+                      />
+                      <IconButton onClick={() => deleteContact(item.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                ))
+              ) : (
+                <Skeleton
+                  variant="rectangular"
+                  height="12.369rem"
+                  width="12.369rem"
+                />
+              )}
             </Stack>
           </Stack>
         </Stack>
-        {/* <Stack
-        justifyContent="center"
-        alignItems="center"
-        spacing={4}
-        width="100%"
-        textAlign="center"
-        component="form"
-        onSubmit={handleSubmit(onSubmitData)}
-      >
-        <Typography variant="h3" width="14rem" color="white">
-          Cadastro
-        </Typography>
-        <TextField
-          sx={{
-            width: "17rem",
-          }}
-          label="Nome completo"
-          placeholder="Nome completo"
-          variant="outlined"
-          helperText={errors.fullName?.message}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          error={errors.fullName !== undefined ? true : false}
-          {...register("fullName")}
-        />
-
-        <TextField
-          sx={{
-            width: "17rem",
-          }}
-          label="Email"
-          placeholder="Digite aqui seu email"
-          variant="outlined"
-          helperText={errors.email?.message}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          error={errors.email !== undefined ? true : false}
-          {...register("email")}
-        />
-
-        <TextField
-          sx={{
-            width: "17rem",
-          }}
-          label="Telefone"
-          placeholder="Digite aqui seu telefone"
-          variant="outlined"
-          helperText={errors.phone?.message}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          error={errors.phone !== undefined ? true : false}
-          {...register("phone")}
-        />
-
-        <TextField
-          sx={{
-            width: "17rem",
-          }}
-          label="Senha"
-          placeholder="••••••••••••"
-          variant="outlined"
-          type={showPassword ? "text" : "password"}
-          helperText={errors.password?.message}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  color="white"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          error={errors.password !== undefined ? true : false}
-          {...register("password")}
-        />
-
-        <Stack direction="column" alignItems="center" spacing={2} width="20%">
-          <Button
-            type="submit"
-            sx={{
-              padding: ".6rem",
-              width: "12rem",
-              borderColor: "white",
-              borderRadius: "30px",
-              color: "white",
-            }}
-            variant="outlined"
-          >
-            Fazer cadastro
-          </Button>
-          <Button
-            size="small"
-            sx={{
-              padding: ".4rem",
-              width: "9rem",
-              borderColor: "white",
-              borderRadius: "30px",
-              color: "white",
-              fontSize: "10px",
-            }}
-            variant="outlined"
-            onClick={() => setTimeout(() => history.push("/login"), 500)}
-          >
-            Já tenho uma conta
-          </Button>
-        </Stack>
-      </Stack> */}
       </Stack>
     </>
   );

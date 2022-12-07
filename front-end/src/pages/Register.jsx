@@ -37,6 +37,7 @@ function Register() {
         setTimeout(() => history.push("/login"), 3000);
       })
       .catch((err) => {
+        console.log(err);
         err.response.data.message === "Email already exists"
           ? toast.error("Email já existente")
           : toast.error("Dados inválidos, verifique os campos");
