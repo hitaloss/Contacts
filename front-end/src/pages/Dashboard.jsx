@@ -19,7 +19,11 @@ import CardContent from "@mui/material/CardContent";
 import { Redirect, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import blackground from "../assets/blackground.jpg";
-import { contactSchema, contactEditSchema, registerSchema } from "../schema";
+import {
+  contactSchema,
+  contactEditSchema,
+  clientUpdateSchema,
+} from "../schema";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import ContactModal from "../components/ContactModal";
@@ -120,7 +124,6 @@ function Dashboard({ isLogged, setIsLogged }) {
       })
       .then(() => {
         getContacts();
-        toast.info("Contato removido");
       })
       .catch((err) => {
         console.log(err);
@@ -137,7 +140,6 @@ function Dashboard({ isLogged, setIsLogged }) {
       })
       .then(() => {
         getClientData();
-        window.location.reload();
       })
       .catch((err) => {
         console.log(err);
@@ -213,7 +215,7 @@ function Dashboard({ isLogged, setIsLogged }) {
               <SettingsIcon />
             </IconButton>
             <ClientSettings
-              schema={registerSchema}
+              schema={clientUpdateSchema}
               function={updateClient}
               open={openSettings}
               setOpen={setOpenSettings}

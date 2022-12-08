@@ -80,19 +80,6 @@ function ClientSettings(props) {
           />
 
           <TextField
-            label="Email"
-            placeholder="Email"
-            variant="outlined"
-            helperText={errors.email?.message}
-            error={errors.email !== undefined ? true : false}
-            sx={{
-              borderRadius: "5px",
-              width: "100%",
-            }}
-            {...register("email")}
-          />
-
-          <TextField
             label="Password"
             placeholder="••••••••••••"
             variant="outlined"
@@ -144,6 +131,7 @@ function ClientSettings(props) {
         </Button>
         <Button
           type="submit"
+          onClick={() => props.setOpen(false)}
           sx={{
             padding: ".6rem",
             width: "12rem",

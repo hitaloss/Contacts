@@ -14,12 +14,10 @@ async function clientUpdateService(
 
   if (!client) throw new AppError(404, "Client not found.");
 
-  if (password) await hash(password, 10);
-
-  const clientUpdated = await clientRepository.update(id, {
+  await clientRepository.update(id, {
     fullName: fullName ? fullName : client.fullName,
     phone: phone ? phone : client.phone,
-    password: password ? password : client.password,
+    password: password ? await hash(password, 10) : client.password,
   });
 
   const clientResponse = await clientRepository.findOneBy({ id });

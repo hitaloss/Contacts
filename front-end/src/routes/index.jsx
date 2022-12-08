@@ -9,7 +9,7 @@ function Routes() {
   const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("contacts@token");
     if (token) return setIsLogged(true);
   }, [isLogged]);
   return (

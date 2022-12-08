@@ -87,3 +87,22 @@ export const contactEditSchema = yup.object().shape({
       "Email inválido"
     ),
 });
+
+export const clientUpdateSchema = yup.object().shape({
+  fullName: yup
+    .string()
+    .required("Campo obrigatório")
+    .min(3, "Seu nome deve possuir no mínimo 3 caracteres")
+    .max(60, "Seu nome deve possuir no máximo 60 caracteres")
+    .matches(/^[a-zA-Z\s]*$/, "Seu nome deve haver apenas letras"),
+  phone: yup
+    .string()
+    .required("Campo obrigatório")
+    .min(11, "Telefone inválido")
+    .max(11, "Telefone inválido")
+    .matches(/^[0-9]*$/, "Seu telefone deve haver apenas números"),
+  password: yup
+    .string()
+    .required("Campo obrigatório")
+    .min(6, "Mínimo de 6 caracteres"),
+});
