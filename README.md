@@ -9,6 +9,7 @@
     - [3. Variáveis de ambiente](#3-variáveis-de-ambiente)
     - [4. Aplicando migrações](#4-aplicando-migrações)
     - [5. Acessando a aplicação](#5-acessando-a-aplicação)
+    - [6. Rodando no Front](#5-rodando-no-front)
 
 ---
 
@@ -76,6 +77,8 @@ SECRET_KEY=minhasecretkey
 
 ### 4. Aplicando migrações
 
+Antes de Aplicar as migrações, certifique-se de deletar quaisquer migrações já existentes na pasta **migrations**
+
 Também é necessário aplicar todas as migrações das entidades presentes no projeto, para isso rode o comando:
 
 ```shell
@@ -99,3 +102,17 @@ yarn dev
 E e acessar o projeto em:
 
 **https://contacts-seven-vert.vercel.app/**
+
+### 6. Rodando no Front
+
+Bem parecido com o processo do back-end, também rode o comando:
+
+```shell
+cd front-end
+```
+
+Para instalar as dependências do front-end, rode o comando:
+
+```
+yarn install
+```
